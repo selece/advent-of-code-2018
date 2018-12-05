@@ -40,7 +40,7 @@ fs.readFile(yargs.input, 'utf8', (err, data) => {
     let found;
     const search = [];
 
-    while (found === undefined) {
+    while (!found) {
       freq += processed[index % processed.length];
 
       if (search.includes(freq)) {
@@ -54,4 +54,6 @@ fs.readFile(yargs.input, 'utf8', (err, data) => {
 
     return console.log(found);
   }
+
+  return console.log('Invalid mode!');
 });
