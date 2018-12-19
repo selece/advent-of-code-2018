@@ -116,5 +116,57 @@ fs.readFile(yargs.input, 'utf8', (err, data) => {
 
   console.log(`sleepiest minute is: ${sleepyMinute}`);
   console.log(`puzzle solution: ${sleepyGuard * sleepyMinute}`);
+
+  // part 2
+  const sleepyHeatMap = lodash._(guards)
+    .reduce(
+      // guard level - looks at each of the guards
+      (acc, days, id) => {
+        acc[id] = lodash._(days).reduce(
+
+          // schedule level - looks at each of the days
+          (result, schedule) => {
+            result.forEach(
+              (elem, i) => { result[i] += schedule[i]; }, // eslint-disable-line no-param-reassign
+            );
+            return result;
+          },
+          Array(60).fill(0),
+        );
+
+        return acc;
+      },
+      {},
+    );
+
+  const sleepyMaxAll = lodash.mapValues(
+    sleepyHeatMap,
+    val => val.reduce((acc, elem) => (acc > elem ? acc : elem)),
+  );
+
+  const sleepyMax = Object.entries(sleepyMaxAll).reduce(
+    (res, val) => {
+      const sleepyValues = Object.values(sleepyMaxAll);
+      const [, maxVal] = val;
+
+      if (lodash.every(sleepyValues, elem => elem <= maxVal)) {
+        res = maxVal; // eslint-disable-line no-param-reassign
+      }
+
+      return res;
+    },
+    0,
+  );
+
+
+  const sleepyMaxGuard = Object.keys(sleepyMaxAll).find(key => sleepyMaxAll[key] === sleepyMax);
+  const sleepyMaxMinute = Object.keys(
+    sleepyHeatMap[sleepyMaxGuard],
+  ).find(
+    key => sleepyHeatMap[sleepyMaxGuard][key] === sleepyMax,
+  );
+
+  console.log(`part2 solution: ${sleepyMaxGuard * sleepyMaxMinute}`);
+
   return 0;
 });
